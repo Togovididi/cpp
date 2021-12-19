@@ -174,52 +174,75 @@ class SuffixTree{
 public:
 }
 
+
+
+
+
+
+
+
+class Query{
+public:
+    int L, R, id, result, blocksize;
+    Query(){}
+    Query(int l, int r, int id){
+		this->L=l;
+		this->R=r;
+		this->id=id;
+	}
+	bool operator <(const Query& q) const{
+		return (this->L/blocksize != q.L/blocksize && this->L/blocksize < q.L/blocksize) || (this->R < q.R);
+	}
+};
+bool byId(Query q1, Query q2){
+	return q1.id < q2.id;
+}
 class MOsAlgo{
 public:
-int block;
-struct Query
-{
-    int L, R;
+	int block, n;
+	vi a;
+	MOsAlgo(){}
+	MOsAlgo(vector<int>& v){
+		a = v;
+		n = sz(a);
+		block = (int)sqrt(n);
+	}
+	void process(vector<Query>& q){
+		for(Query& Q: q){Q.blocksize = block;}
+		int m = sz(q);
+		sort(q.begin(),q.end());
+	 
+		int currL = 0, currR = 0;
+		int currSum = 0;
+	 
+		for (int i=0; i<m; i++){
+			int L = q[i].L, R = q[i].R;
+			while (currL < L){
+				currSum -= a[currL];
+				currL++;
+			}
+			while (currL > L){
+				currSum += a[currL-1];
+				currL--;
+			}
+			while (currR <= R){
+				currSum += a[currR];
+				currR++;
+			}
+			while (currR > R+1){
+				currSum -= a[currR-1];
+				currR--;
+			}
+			//~ printf("%d %d %d\n",q[i].L,q[i].R,currSum);
+			q[i].result = currSum;
+		}
+		sort(all(q), byId);
+	}
 };
-bool compare(Query x, Query y)
-{
-    if (x.L/block != y.L/block)
-        return x.L/block < y.L/block;
-    return x.R < y.R;
-}
-void queryResults(int a[], int n, Query q[], int m)
-{
-    block = (int)sqrt(n);
-    sort(q, q + m, compare);
- 
-    int currL = 0, currR = 0;
-    int currSum = 0;
- 
-    for (int i=0; i<m; i++)
-    {
-        int L = q[i].L, R = q[i].R;
-        while (currL < L)
-        {
-            currSum -= a[currL];
-            currL++;
-        }
-        while (currL > L)
-        {
-            currSum += a[currL-1];
-            currL--;
-        }
-        while (currR <= R)
-        {
-            currSum += a[currR];
-            currR++;
-        }
-        while (currR > R+1)
-        {
-            currSum -= a[currR-1];
-            currR--;
-        }
-}
-}
+
+
+
+
 
 class ZAlgo{
 public:
