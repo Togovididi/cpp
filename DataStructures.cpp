@@ -241,6 +241,77 @@ public:
 };
 
 
+//diffretnts elements
+
+class Query{
+public:
+    int L, R, id, result, blocksize;
+    Query(){}
+    Query(int l, int r, int id){
+		this->L=l;
+		this->R=r;
+		this->id=id;
+	}
+	bool operator <(const Query& q) const{
+		return (this->L/blocksize != q.L/blocksize && this->L/blocksize < q.L/blocksize) || (this->R < q.R);
+	}
+};
+
+bool byId(Query q1, Query q2){
+	return q1.id < q2.id;
+}
+
+class MOsAlgo{
+public:
+	int block, n;
+	vi a;
+	MOsAlgo(){}
+	MOsAlgo(vector<int>& v){
+		a = v;
+		n = sz(a);
+		block = (int)sqrt(n);
+	}
+	void process(vector<Query>& q){
+		for(Query& Q: q){Q.blocksize = block;}
+		int m = sz(q);
+		int freq[szmax] = { 0 };
+		sort(q.begin(),q.end());
+		int currL = 0, currR = 0;
+		int curr_Diff_elements = 0;
+		for (int i = 0; i < m; i++) {
+			int L = q[i].L, R = q[i].R;
+			while (currL < L) {
+				freq[a[currL]]--;
+				if (freq[a[currL]] == 0) 
+					curr_Diff_elements--;
+				currL++;
+			}
+				while (currL > L) {
+				freq[a[currL - 1]]++;
+				if (freq[a[currL - 1]] == 1) 
+					curr_Diff_elements++;
+				currL--;
+			}
+			while (currR <= R) {
+				freq[a[currR]]++;
+				if (freq[a[currR]] == 1) 
+					curr_Diff_elements++;
+				currR++;
+			}
+			while (currR > R + 1) {
+				freq[a[currR - 1]]--;
+				if (freq[a[currR - 1]] == 0) 
+					curr_Diff_elements--;
+				currR--;
+			}
+			q[i].result = curr_Diff_elements;
+		}
+		sort(all(q), byId);
+	}
+};
+		
+
+
 
 
 
