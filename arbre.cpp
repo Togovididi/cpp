@@ -129,9 +129,57 @@ public:
 	}
 };
 
-class EulerWalk{
+		
+		
+//à tester encore
+class EulerWalk{//personnalisation : on rentre et sort d'un sommet une seule fois
 public:
-}
+	Graph g;
+	int n;
+	vector<int> parent;
+	vector<int> depth;
+	vector<int> euler;
+	vector<int> firstApp;
+	vector<int> lastApp;
+	int currApp=0;
+	EulerWalk(){}
+	EulerWalk(Graph& g){
+		this->g = g;
+		this->n=g.V;
+		parent.resize(n+1);
+		depth.resize(n+1);
+		firstApp.resize(n+1);
+		lastApp.resize(n+1);
+	}
+	void process(int v, int p, int dep){
+		euler.push_back(v);
+		firstApp[v] = currApp;
+		currApp++;
+		depth[v] = dep;
+		parent[v]=p;
+		for (Edge e: g.adj[v]){
+			if(e.target != p){
+					process(e.target, v, dep+1);
+			}
+		}
+		euler.push_back(v);
+		lastApp[v] = currApp;
+		currApp++;
+	}
+	void afficher(string nom, vi& t){
+		cout<<nom<<"\t\t\t:";
+		for(int i=0;i<sz(t);i++){
+			printf("%d:%d ",i,t[i]);
+		}printf("\n\n");
+	}
+	void prnt(){
+		//~ afficher("parent",parent);
+		//~ afficher("depth",depth);
+		afficher("euler",euler);
+		//~ afficher("firstApp",firstApp);
+		//~ afficher("lastApp",lastApp);
+	}
+};
 
 
 class LCA_LOG{

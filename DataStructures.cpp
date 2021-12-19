@@ -369,8 +369,59 @@ public:
 		
 
 
-
-
+//à tester encore
+class Query{//nombre d'occurence d'un nombre dans une certaine plage
+public:
+    int L, R, id, result, blocksize, cible;
+    Query(){}
+    Query(int l, int r, int cible,int id){
+		this->L=l;
+		this->R=r;
+		this->id=id;
+		this->cible = cible;
+	}
+	bool operator <(const Query& q) const{
+		return (this->L/blocksize != q.L/blocksize && this->L/blocksize < q.L/blocksize) || (this->R < q.R);
+	}
+};
+bool byId(Query q1, Query q2){
+	return q1.id < q2.id;
+}
+class MOsAlgo{
+public:
+	int block, n;
+	vi a;
+	MOsAlgo(){}
+	MOsAlgo(vector<int>& v){
+		a = v;
+		n = sz(a);
+		block = (int)sqrt(n);
+	}
+	void process(vector<Query>& q){
+		for(Query& Q: q){Q.blocksize = block;}
+		int m = sz(q);
+		int freq[szmax] = { 0 };
+		sort(q.begin(),q.end());
+		int currL = 0, currR = 0;
+		for (int i = 0; i < m; i++) {
+			int L = q[i].L, R = q[i].R; 
+			while (currL < L) {
+				freq[a[currL]]--;currL++;
+			}
+				while (currL > L) {
+				freq[a[currL - 1]]++;currL--;
+			}
+			while (currR <= R) {
+				freq[a[currR]]++;currR++;
+			}
+			while (currR > R + 1) {
+				freq[a[currR - 1]]--;currR--;
+			}
+			q[i].result = freq[q[i].cible];
+		}
+		sort(all(q), byId);
+	}
+};
 
 
 class ZAlgo{
